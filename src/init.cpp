@@ -349,6 +349,8 @@ bool AppInit2()
 #endif
 
     // ********************************************************* Step 2: parameter interactions
+    SoftSetBoolArg("-irc", false);
+    SoftSetBoolArg("-listen", true); // just making sure
 
     fTestNet = GetBoolArg("-testnet");
     if (fTestNet) {
@@ -646,9 +648,6 @@ bool AppInit2()
 
     BOOST_FOREACH(string strDest, mapMultiArgs["-seednode"])
         AddOneShot(strDest);
-
-    // TODO: replace this by DNSseed
-    // AddOneShot(string(""));
 
     // ********************************************************* Step 7: load blockchain
 
