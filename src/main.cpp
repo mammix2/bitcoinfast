@@ -995,6 +995,22 @@ int64 GetProofOfStakeReward(int64 nCoinAge, unsigned int nBits, unsigned int nTi
     return nSubsidy;
 }
 
+unsigned int GetStakeMinAge(unsigned int nTime)
+{
+//  if (nTime > VERSION2_SWITCH_TIME)
+//      return nStakeMinAgeV2; // 15 days
+//  else
+      return nStakeMinAge; //30 days
+}
+
+unsigned int GetStakeMaxAge(unsigned int nTime)
+{
+//  if (nTime > VERSION2_SWITCH_TIME)
+//      return nStakeMaxAgeV2;  // 45 days
+//  else
+      return nStakeMaxAge; // 90 days
+}
+
 static const int64 nTargetTimespan = 60;  
 static const int64 nTargetSpacingWorkMax = 30; 
 
