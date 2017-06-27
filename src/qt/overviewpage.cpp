@@ -130,7 +130,7 @@ void OverviewPage::handleTransactionClicked(const QModelIndex &index)
 
 void OverviewPage::handleHomeButton()
 {
-  QDesktopServices::openUrl(QUrl("http://BitbarFast.co"));
+  QDesktopServices::openUrl(QUrl("http://BitcoinFast.co"));
 }
 
 OverviewPage::~OverviewPage()
