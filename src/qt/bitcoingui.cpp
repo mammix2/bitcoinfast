@@ -944,6 +944,8 @@ void BitcoinGUI::toggleHidden()
 
 void BitcoinGUI::updateMintingIcon()
 {
+
+/*
     if (pwalletMain && pwalletMain->IsLocked())
     {
         labelMintingIcon->setToolTip(tr("Not staking because wallet is locked."));
@@ -994,6 +996,50 @@ void BitcoinGUI::updateMintingIcon()
         labelMintingIcon->setToolTip(tr("Not staking."));
         labelMintingIcon->setEnabled(false);
     }
+*/
+
+      if (!walletModel)
+         return;
+
+        labelMintingIcon->setEnabled(false);
+//      labelStakingIcon->setPixmap(QIcon(":/icons/staking_off").pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
+
+      if (!clientModel->getNumConnections())
+         labelMintingIcon->setToolTip(tr("Not staking because wallet is offline"));
+      else if (clientModel->inInitialBlockDownload() ||
+               clientModel->getNumBlocks() < clientModel->getNumBlocksOfPeers())
+         labelMintingIcon->setToolTip(tr("Not staking because wallet is syncing"));
+      else if(walletModel->getEncryptionStatus() == WalletModel::Locked)
+         labelMintingIcon->setToolTip(tr("Not staking because wallet is locked"));
+      else
+      {
+         uint64 nMinWeight = 0, nMaxWeight = 0, nWeight = 0;
+
+         walletModel->getStakeWeight(nMinWeight,nMaxWeight,nWeight);
+         if (!nWeight)
+            labelMintingIcon->setToolTip(tr("Not staking because you don't have mature coins"));
+          else
+          {
+            uint64 nNetworkWeight = clientModel->getPosKernalPS();
+            int nEstimateTime = clientModel->getStakeTargetSpacing() * 10 * nNetworkWeight / nWeight;
+            QString text;
+            if (nEstimateTime < 60)
+               text = tr("%n second(s)", "", nEstimateTime);
+            else if (nEstimateTime < 60*60)
+               text = tr("%n minute(s)", "", nEstimateTime/60);
+            else if (nEstimateTime < 24*60*60)
+               text = tr("%n hour(s)", "", nEstimateTime/(60*60));
+            else
+               text = tr("%n day(s)", "", nEstimateTime/(60*60*24));
+
+        labelMintingIcon->setEnabled(true);
+//            labelStakingIcon->setPixmap(QIcon(":/icons/staking_on").pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
+            labelMintingIcon->setToolTip(tr("Staking.\n Your weight is %1\n Network weight is %2\n You have 50\% chance of producing a stake within %3").arg(nWeight).arg(nNetworkWeight).arg(text));
+          }
+       }
+
+
+
 }
 
 void BitcoinGUI::updateMintingWeights()
