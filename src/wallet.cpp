@@ -15,6 +15,7 @@
  
 using namespace std;
 extern int nStakeMaxAge;
+extern bool fWalletUnlockMintOnly;
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -86,7 +87,7 @@ bool CWallet::AddCScript(const CScript& redeemScript)
 
 // ppcoin: optional setting to unlock wallet for block minting only;
 //         serves to disable the trivial sendmoney when OS account compromised
-bool fWalletUnlockMintOnly = false;
+//bool fWalletUnlockMintOnly = false;
 
 bool CWallet::Unlock(const SecureString& strWalletPassphrase)
 {

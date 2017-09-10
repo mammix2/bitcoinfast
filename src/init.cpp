@@ -283,8 +283,7 @@ std::string HelpMessage()
         "  -keypool=<n>           " + _("Set key pool size to <n> (default: 100)") + "\n" +
         "  -rescan                " + _("Rescan the block chain for missing wallet transactions") + "\n" +
         "  -salvagewallet         " + _("Attempt to recover private keys from a corrupt wallet.dat") + "\n" +
-        "  -zapwallettxes=<mode>  " + _("Delete all wallet transactions and only recover those parts of the blockchain through -rescan on startup\n") +
-        " " + _("(1 = keep tx meta data e.g. account owner and payment request information, 2 = drop tx meta data)\n") +
+        "  -zapwallettxes  " + _("Delete all wallet transactions and only recover those parts of the blockchain through -rescan on startup") + "\n" +
         "  -checkblocks=<n>       " + _("How many blocks to check at startup (default: 2500, 0 = all)") + "\n" +
         "  -checklevel=<n>        " + _("How thorough the block verification is (0-6, default: 1)") + "\n" +
         "  -loadblock=<file>      " + _("Imports blocks from external blk000?.dat file") + "\n" +
@@ -724,7 +723,11 @@ bool AppInit2()
     // needed to restore wallet transaction meta data after -zapwallettxes
     std::vector<CWalletTx> vWtx;
 
-    if (GetBoolArg("-zapwallettxes", false)) {
+    if (GetBoolArg("-zapwallettxes", false))
+    {
+      //debug
+      printf("running zapwallettxes from startup.\n");
+
         uiInterface.InitMessage(_("Zapping all transactions from wallet..."));
         printf("Zapping all transactions from wallet...\n");
 
@@ -821,8 +824,8 @@ bool AppInit2()
         printf(" rescan      %15"PRI64d"ms\n", GetTimeMillis() - nStart);
         nWalletDBUpdated++;
 
-        // Restore wallet transaction metadata after -zapwallettxes=1
-        if (GetBoolArg("-zapwallettxes", false) && GetArg("-zapwallettxes", "1") != "2")
+        // Restore wallet transaction metadata after -zapwallettxes
+        if (GetBoolArg("-zapwallettxes", false))
         {
           BOOST_FOREACH(const CWalletTx& wtxOld, vWtx)
           {

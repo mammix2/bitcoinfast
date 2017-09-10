@@ -1,6 +1,7 @@
 #include "sendcoinsdialog.h"
 #include "ui_sendcoinsdialog.h"
 #include "init.h"
+#include "main.h"
 #include "walletmodel.h"
 #include "addresstablemodel.h"
 #include "addressbookpage.h"
@@ -18,6 +19,8 @@
 #include <QTextDocument>
 #include <QScrollBar>
 #include <QClipboard>
+
+extern bool fWalletUnlockMintOnly;
 
 SendCoinsDialog::SendCoinsDialog(QWidget *parent) :
     QDialog(parent),
