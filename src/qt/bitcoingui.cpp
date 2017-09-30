@@ -1080,7 +1080,6 @@ void BitcoinGUI::zapWallet()
   pwalletMain->ReacceptWalletTransactions();
   splashMessage(_("Please restart your wallet."));
   printf(" zap wallet  done - please restart wallet.\n");
-  sleep (10);
 
 //  close splash screen
   if (splashref)
@@ -1158,65 +1157,10 @@ void BitcoinGUI::toggleHidden()
 
 void BitcoinGUI::updateMintingIcon()
 {
-
-/*
-    if (pwalletMain && pwalletMain->IsLocked())
-    {
-        labelMintingIcon->setToolTip(tr("Not staking because wallet is locked."));
-        labelMintingIcon->setEnabled(false);
-    }
-    else if (vNodes.empty())
-    {
-        labelMintingIcon->setToolTip(tr("Not staking because wallet is offline."));
-        labelMintingIcon->setEnabled(false);
-    }
-    else if (IsInitialBlockDownload())
-    {
-        labelMintingIcon->setToolTip(tr("Not staking because wallet is syncing."));
-        labelMintingIcon->setEnabled(false);
-    }
-    else if (!nWeight)
-    {
-        labelMintingIcon->setToolTip(tr("Not staking because you don't have mature coins."));
-        labelMintingIcon->setEnabled(false);
-    }
-    else if (nLastCoinStakeSearchInterval)
-    {
-        uint64 nEstimateTime = nStakeTargetSpacing * nNetworkWeight / nWeight;
-
-        QString text;
-        if (nEstimateTime < 60)
-        {
-            text = tr("%n second(s)", "", nEstimateTime);
-        }
-        else if (nEstimateTime < 60*60)
-        {
-            text = tr("%n minute(s)", "", nEstimateTime/60);
-        }
-        else if (nEstimateTime < 24*60*60)
-        {
-            text = tr("%n hour(s)", "", nEstimateTime/(60*60));
-        }
-        else
-        {
-            text = tr("%n day(s)", "", nEstimateTime/(60*60*24));
-        }
-
-        labelMintingIcon->setEnabled(true);
-        labelMintingIcon->setToolTip(tr("Staking.<br>Your weight is %1.<br>Network weight is %2.<br>Expected time to earn reward is %3.").arg(nWeight).arg(nNetworkWeight).arg(text));
-    }
-    else
-    {
-        labelMintingIcon->setToolTip(tr("Not staking."));
-        labelMintingIcon->setEnabled(false);
-    }
-*/
-
       if (!walletModel)
          return;
 
         labelMintingIcon->setEnabled(false);
-//      labelStakingIcon->setPixmap(QIcon(":/icons/staking_off").pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
 
       if (!clientModel->getNumConnections())
          labelMintingIcon->setToolTip(tr("Not staking because wallet is offline"));
@@ -1247,7 +1191,6 @@ void BitcoinGUI::updateMintingIcon()
                text = tr("%n day(s)", "", nEstimateTime/(60*60*24));
 
         labelMintingIcon->setEnabled(true);
-//            labelStakingIcon->setPixmap(QIcon(":/icons/staking_on").pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
             labelMintingIcon->setToolTip(tr("Staking.\n Your weight is %1\n Network weight is %2\n You have 50\% chance of producing a stake within %3").arg(nWeight).arg(nNetworkWeight).arg(text));
           }
        }
