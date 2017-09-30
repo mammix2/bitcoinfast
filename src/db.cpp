@@ -9,6 +9,7 @@
 #include "util.h"
 #include "main.h"
 #include "kernel.h"
+#include "ui_interface.h"
 #include <boost/version.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
@@ -620,6 +621,8 @@ bool CTxDB::LoadBlockIndex()
     if (fRequestShutdown)
         return true;
 
+    string mess="calculating best chain...";
+    uiInterface.InitMessage(_(mess.c_str()));
     // Calculate bnChainTrust
     vector<pair<int, CBlockIndex*> > vSortedByHeight;
     vSortedByHeight.reserve(mapBlockIndex.size());
@@ -655,6 +658,9 @@ bool CTxDB::LoadBlockIndex()
       hashBestChain.ToString().substr(0,20).c_str(), nBestHeight, bnBestChainTrust.ToString().c_str(),
       DateTimeStrFormat("%x %H:%M:%S", pindexBest->GetBlockTime()).c_str());
 
+    mess="best chain height "+boost::to_string(nBestHeight);
+    uiInterface.InitMessage(_(mess.c_str()));
+
     // ppcoin: load hashSyncCheckpoint
     if (!ReadSyncCheckpoint(Checkpoints::hashSyncCheckpoint))
         return error("CTxDB::LoadBlockIndex() : hashSyncCheckpoint not loaded");
@@ -671,10 +677,27 @@ bool CTxDB::LoadBlockIndex()
     if (nCheckDepth > nBestHeight)
         nCheckDepth = nBestHeight;
     printf("Verifying last %i blocks at level %i\n", nCheckDepth, nCheckLevel);
+    mess="verifying last "+boost::to_string(nCheckDepth);
+    uiInterface.InitMessage(_(mess.c_str()));
+
     CBlockIndex* pindexFork = NULL;
     map<pair<unsigned int, unsigned int>, CBlockIndex*> mapBlockPos;
+
+    unsigned int tempcount=0;
+    unsigned int steptemp=0;
+    string tempmess;
+
     for (CBlockIndex* pindex = pindexBest; pindex && pindex->pprev; pindex = pindex->pprev)
     {
+      tempcount++;
+      if(tempcount>=100)
+      {
+        steptemp ++;
+        tempmess=mess+" / "+ boost::to_string(pindex);
+        uiInterface.InitMessage(_(tempmess.c_str()));
+        tempcount=0;
+      }
+
         if (fRequestShutdown || pindex->nHeight < nBestHeight-nCheckDepth)
             break;
         CBlock block;
@@ -795,6 +818,9 @@ bool CTxDB::LoadBlockIndex()
 
 bool CTxDB::LoadBlockIndexGuts()
 {
+    string mess="loading block index ";
+    uiInterface.InitMessage(_(mess.c_str()));
+
     // Get database cursor
     Dbc* pcursor = GetCursor();
     if (!pcursor)
@@ -802,6 +828,11 @@ bool CTxDB::LoadBlockIndexGuts()
 
     // Load mapBlockIndex
     unsigned int fFlags = DB_SET_RANGE;
+
+    unsigned int tempcount=0;
+    unsigned int steptemp=0;
+    string tempmess;
+
     loop
     {
         // Read next record
@@ -846,6 +877,15 @@ bool CTxDB::LoadBlockIndexGuts()
             pindexNew->nBits          = diskindex.nBits;
             pindexNew->nNonce         = diskindex.nNonce;
 
+            tempcount ++;
+            if(tempcount>=1000)
+            {
+              steptemp ++;
+              tempmess=mess+ boost::to_string(steptemp * 1000);
+              uiInterface.InitMessage(_(tempmess.c_str()));
+              tempcount=0;
+            }
+
             // Watch for genesis block
             if (pindexGenesisBlock == NULL && diskindex.GetBlockHash() == (!fTestNet ? hashGenesisBlock : hashGenesisBlockTestNet))
                 pindexGenesisBlock = pindexNew;
@@ -868,6 +908,9 @@ bool CTxDB::LoadBlockIndexGuts()
     }
     pcursor->close();
 
+    steptemp=steptemp*1000 +tempcount;
+    tempmess=mess+ boost::to_string(steptemp);
+    uiInterface.InitMessage(_(tempmess.c_str()));
     return true;
 }
 
