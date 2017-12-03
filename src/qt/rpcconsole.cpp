@@ -15,10 +15,6 @@
 
 #include <openssl/crypto.h>
 
-#ifndef Q_MOC_RUN
-#include <boost/python.hpp>
-#endif
-
 // TODO: make it possible to filter out categories (esp debug messages when implemented)
 // TODO: receive errors and debug messages through ClientModel
 
